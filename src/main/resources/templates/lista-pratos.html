@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pratos</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <a th:href="@{/lista-pedidos}" class="btn btn-secondary mb-3">Voltar</a>
+        <h2 class="mb-4">Lista de pratos</h2>
+        <table id="pratosTable" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Quantidade</th>
+                    <th>Pedido ID</th>
+                    <th>Cardapio ID</th>
+                </tr>
+            </thead> 
+            <tbody>
+                <tr th:each="pratos : ${listaPratos}">
+                    <td th:text="${pratos.id}"></td>
+                    <td th:text="${pratos.quantidade}"></td>
+                    <td th:text="${pratos.idPedidos}"></td>                
+                    <td th:text="${pratos.cardapioId}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

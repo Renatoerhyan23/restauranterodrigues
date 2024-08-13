@@ -1,0 +1,7 @@
+body {
+	font-family: "Poppins", sans-serif;
+	margin: 0 auto;
+	max-width: 1120px;
+	background: linear-gradient(150deg, #ffffff, #bafcf3) !important;
+	background-size: 120% 120%;
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pedidos</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <a th:href="@{/}" class="btn btn-secondary mb-3">Voltar</a>
+        <h2 class="mb-4">Lista de pedidos finalizados</h2>
+        <table id="pedidosTable" class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>CPF</th>
+                    <th>Mesa</th>
+                    <th>Valor Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead> 
+            <tbody>
+                <tr th:each="pedidos : ${listaPedidos}">
+                    <td th:text="${pedidos.id}"></td>
+                    <td th:text="${pedidos.cpfCliente}"></td>
+                    <td th:text="${pedidos.mesasId}"></td>
+                    <td th:text="${pedidos.valorTotal}"></td>                
+                    <td th:text="${pedidos.status}"></td>     
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <a th:href="@{/lista-pratos}" class="btn btn-secondary mb-3">Pratos servidos</a>
+    </div>
+</body>
+</html>

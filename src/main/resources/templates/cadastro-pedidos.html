@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesas e Pedidos</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <a th:href="@{/}" class="btn btn-secondary mb-3">Voltar</a>
+
+        <h2 class="mb-4">Mesas</h2>
+        
+        <div class="d-flex justify-content-end mb-3">
+            <a th:href="@{'/adicionar-mesa'}">
+                <button type="button" class="btn btn-dark">+ </button>
+            </a>
+            <a th:href="@{'/remover-mesa'}">
+                <button type="button" class="btn btn-dark"> -</button>
+            </a>
+        </div>
+        
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="mesa : ${listaMesas}">
+                    <td th:text="${mesa.id}"></td>
+                    <td th:text="${mesa.status}"></td>
+                    <td>
+                        <a th:if="${mesa.status == 'LIVRE'}" th:href="@{'/adicionar-pedido?mesaId=' + ${mesa.id}}">
+                            <button type="button" class="btn btn-primary">Adicionar Pedido</button>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>   
+
+        <h2 class="mt-5 mb-4">Pedidos Abertos</h2>
+        <table id="pedidosTable" class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>CPF</th>
+                    <th>Mesa</th>
+                    <th>Valor Total</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead> 
+            <tbody>
+                <tr th:each="pedidos : ${listaPedidos}" th:if="${pedidos.status == 'ABERTO'}">
+                    <td th:text="${pedidos.id}"></td>
+                    <td th:text="${pedidos.cpfCliente}"></td>
+                    <td th:text="${pedidos.mesasId}"></td>
+                    <td th:text="${pedidos.valorTotal}"></td>                
+                    <td th:text="${pedidos.status}"></td>  
+                    <td>                     
+                        <a th:href="@{'/alterar-pedido?id=' + ${pedidos.id}}">
+                            <button type="button" class="btn btn-dark">Adicionar</button>
+                        </a>
+                        <a th:href="@{'/finalizar-pedido?id=' + ${pedidos.id} + '&mesaId=' + ${pedidos.mesasId}}">
+                            <button type="button" class="btn btn-success">Finalizar</button>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
