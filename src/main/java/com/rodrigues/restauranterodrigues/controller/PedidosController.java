@@ -1,11 +1,11 @@
 package com.rodrigues.restauranterodrigues.controller;
 
-import com.rodrigues.restauranterodrigues.model.Cardapio;
-import com.rodrigues.restauranterodrigues.model.Mesas;
-import com.rodrigues.restauranterodrigues.model.Pedidos;
-import com.rodrigues.restauranterodrigues.model.Pratos;
-import java.util.ArrayList;
-import java.util.List;
+import com.rodrigues.restauranterodrigues.data.CardapioEntity;
+import com.rodrigues.restauranterodrigues.data.MesasEntity;
+import com.rodrigues.restauranterodrigues.data.PedidosEntity;
+import com.rodrigues.restauranterodrigues.service.CardapioService;
+import com.rodrigues.restauranterodrigues.service.MesasService;
+import com.rodrigues.restauranterodrigues.service.PedidosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,14 +14,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class PedidosController {
-        private List<Pedidos> listaPedidos = new ArrayList<>();        
+public class PedidosController {      
+        @Autowired
+        private PedidosService pedidosService;
+            
+        @Autowired
+        private MesasService mesasService;
         
         @Autowired
         private MesasController mesasController;
         
         @Autowired
         private CardapioController cardapioController;
+        
+        @Autowired
+        private CardapioService cardapioService;
         
         @Autowired
         private PratosController pratosController;
@@ -33,15 +40,13 @@ public String inicio() {
     
 @GetMapping("/lista-pedidos") 
 public String mostraPedidos(Model model){ 
-    model.addAttribute("pedidos", new Pedidos()); 
-    model.addAttribute("listaPedidos", listaPedidos); 
+    model.addAttribute("pedidos", new PedidosEntity()); 
+    model.addAttribute("listaPedidos", pedidosService.listarTodosPedidos()); 
     return "lista-pedidos"; 
     }
 
 @GetMapping("/adicionar-pedido") 
-public String recebePedidos(Model model, @ModelAttribute Pedidos pedidos, @RequestParam("mesaId") String mesa){ 
-    pedidos.setId(listaPedidos.size() + 1);
-       
+public String recebePedidos(Model model, @ModelAttribute PedidosEntity pedidos, @RequestParam("mesaId") String mesa){       
     Integer idMesa = Integer.parseInt(mesa);
     mesasController.ocuparMesas(idMesa);
     
@@ -49,59 +54,55 @@ public String recebePedidos(Model model, @ModelAttribute Pedidos pedidos, @Reque
     pedidos.setValorTotal(0);      
     pedidos.setStatus("ABERTO");
     
-    listaPedidos.add(pedidos);
+    pedidosService.criarPedido(pedidos);
     model.addAttribute("pedidos", pedidos);
     return "redirect:/cadastro-pedidos";  
     }
-
-private Pedidos buscarPedido(Integer idPedido) {
-    for (Pedidos p : listaPedidos) {
-        if (p.getId().equals(idPedido)) {
-            return p;
-        }
-    }
-    return null;
-}
     
 @GetMapping("/cadastro-pedidos") 
 public String mostraMesas(Model model){    
-    model.addAttribute("mesas", new Mesas()); 
-    model.addAttribute("listaMesas", mesasController.getListaMesas()); 
-    model.addAttribute("listaPedidos", listaPedidos);
+    model.addAttribute("mesas", new MesasEntity()); 
+    model.addAttribute("listaMesas", mesasService.listarTodasMesas()); 
+    model.addAttribute("listaPedidos", pedidosService.listarTodosPedidos());
     return "cadastro-pedidos"; 
     }
 
 @GetMapping("/alterar-pedido")
 public String carregaPagina(Model model, @RequestParam("id") String id) {
     model.addAttribute("pedidoId", id);
-    model.addAttribute("cardapio", new Cardapio()); 
-    model.addAttribute("listaPrato", cardapioController.getListaCardapio()); 
+    model.addAttribute("cardapio", new CardapioEntity()); 
+    model.addAttribute("listaPrato", cardapioService.listarTodoCardapio()); 
     return "atualizar-pedido";      
     }
 
 @GetMapping("/atualizar-pedidos")
 public String atualizarPedido(Model model, @RequestParam("id") String id, 
                                            @RequestParam("idCardapio") String cardapioId, 
-                                           @RequestParam("preco") Integer preco) {
+                                           @RequestParam("preco") double preco,
+                                           @RequestParam("quantidade") int quantidade) {
     Integer idPedido = Integer.parseInt(id);     
     Integer idCardapio = Integer.parseInt(cardapioId);
-    Pedidos p = buscarPedido(idPedido); 
-    
-    pratosController.cadastrarPrato(idPedido, idCardapio);
+    PedidosEntity p = pedidosService.buscarPorId(idPedido); 
+    double valorTotal = preco*quantidade;
+    pratosController.cadastrarPrato(idPedido, idCardapio, quantidade);
        
-    p.setValorTotal(p.getValorTotal() + preco);
+    p.setValorTotal(p.getValorTotal() + valorTotal);
+    pedidosService.atualizarPedidos(idPedido, p);
     
-    return "redirect:/cadastro-pedidos";       
+    return "redirect:/alterar-pedido?id=" + id;       
     }
 
 @GetMapping("/finalizar-pedido")
-    public String finalizarPedido (@RequestParam("id") String id, @RequestParam("mesaId") String idMesa) {
+    public String finalizarPedido (@RequestParam("id") String id, @RequestParam("mesaId") String idMesa, @RequestParam("cpf") String cpf) {
       Integer idPedido = Integer.parseInt(id);
       Integer mesa = Integer.parseInt(idMesa);
-      Pedidos p = buscarPedido(idPedido);
+      
+      PedidosEntity p = pedidosService.buscarPorId(idPedido);
       
       p.setStatus("FINALIZADO"); 
-      p.setCpfCliente("");
+      p.setCpfCliente(cpf);
+      pedidosService.atualizarPedidos(idPedido, p);
+      
       mesasController.desocuparMesas(mesa);
       
       return "redirect:/cadastro-pedidos";

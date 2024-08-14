@@ -19,6 +19,7 @@
                     <th>Nome do prato</th>
                     <th>Preço</th>
                     <th>Descrição</th>
+                    <th>Quantidade</th>
                     <th>Ações</th>
                 </tr>
             </thead> 
@@ -28,14 +29,37 @@
                     <td th:text="${cardapio.nomePrato}"></td>
                     <td th:text="${cardapio.preco}"></td>                
                     <td th:text="${cardapio.descricao}"></td>
+                    <td>
+                        <input type="number" th:id="'quantiInput-' + ${cardapio.id}" min="1" step="1" pattern="\d*" value="1" />                      
+                    </td>
                     <td>                     
-                        <a th:href="@{'/atualizar-pedidos?id=' + ${pedidoId} +
-                           '&idCardapio=' + ${cardapio.id} + '&preco=' + ${cardapio.preco}}"
-                           class="btn btn-danger">Adicionar</a>
+                        <a th:attr="onclick=|calcularPedido('${pedidoId}', '${cardapio.id}', '${cardapio.preco}')|">
+                            <button type="button" class="btn btn-dark">Adicionar</button>
+                        </a>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
+<script>
+    function calcularPedido(id, idCardapio, preco) {
+        // Obtém o valor do input e converte para número
+        var quantidadeInput = document.getElementById('quantiInput-' + idCardapio);
+        var quantidade = parseInt(quantidadeInput.value);
+        
+        // Valida a quantidade
+        if (isNaN(quantidade) || quantidade < 1) {
+            alert("A quantidade deve ser pelo menos 1.");
+            return false;
+        }
+        
+        // Calcula o valor total
+        var valorTotal = preco * quantidade;
+        
+        // Construa a URL e redirecione
+        var url = '/atualizar-pedidos?id=' + id + '&idCardapio=' + idCardapio + '&preco=' + valorTotal + '&quantidade=' + quantidade;
+        window.location.href = url;
+    }
+</script>
 </body>
 </html>

@@ -34,7 +34,7 @@
                     <td th:text="${mesa.id}"></td>
                     <td th:text="${mesa.status}"></td>
                     <td>
-                        <a th:if="${mesa.status == 'LIVRE'}" th:href="@{'/adicionar-pedido?mesaId=' + ${mesa.id}}">
+                        <a th:if="${mesa.status == 'DISPONIVEL'}" th:href="@{'/adicionar-pedido?mesaId=' + ${mesa.id}}">
                             <button type="button" class="btn btn-primary">Adicionar Pedido</button>
                         </a>
                     </td>
@@ -47,7 +47,7 @@
             <thead class="thead-dark">
                 <tr>
                     <th>ID</th>
-                    <th>CPF</th>
+                    <th>CPF (Opcional)</th>
                     <th>Mesa</th>
                     <th>Valor Total</th>
                     <th>Status</th>
@@ -56,22 +56,35 @@
             </thead> 
             <tbody>
                 <tr th:each="pedidos : ${listaPedidos}" th:if="${pedidos.status == 'ABERTO'}">
-                    <td th:text="${pedidos.id}"></td>
-                    <td th:text="${pedidos.cpfCliente}"></td>
+                    <td th:text="${pedidos.id}"></td> 
+                    <td>
+                        <input type="text" th:id="'cpfInput-' + ${pedidos.id}" th:value="${pedidos.cpfCliente}" pattern="\d*" />                      
+                    </td>
                     <td th:text="${pedidos.mesasId}"></td>
                     <td th:text="${pedidos.valorTotal}"></td>                
                     <td th:text="${pedidos.status}"></td>  
                     <td>                     
                         <a th:href="@{'/alterar-pedido?id=' + ${pedidos.id}}">
                             <button type="button" class="btn btn-dark">Adicionar</button>
-                        </a>
-                        <a th:href="@{'/finalizar-pedido?id=' + ${pedidos.id} + '&mesaId=' + ${pedidos.mesasId}}">
-                            <button type="button" class="btn btn-success">Finalizar</button>
+                        </a>   
+                        
+                        <a th:attr="onclick=|finalizarPedido('${pedidos.id}', '${pedidos.mesasId}', '${pedidos.cpfCliente}')|">
+                            <button type="button" class="btn btn-dark">Finalizar</button>
                         </a>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
+    <script>
+        function finalizarPedido(id, mesaId, cpf) {
+            var cpfInput = document.getElementById('cpfInput-' + id);
+            var cpfValue = cpfInput ? cpfInput.value.trim() : cpf;
+
+            // Construa a URL e redirecione
+            var url = '/finalizar-pedido?id=' + id + '&mesaId=' + mesaId + '&cpf=' + encodeURIComponent(cpfValue);
+            window.location.href = url;
+        }
+    </script>
 </body>
 </html>

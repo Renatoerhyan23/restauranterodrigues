@@ -13,18 +13,18 @@
         <table id="pratosTable" class="table table-striped table-bordered">
             <thead class="thead-dark">
                 <tr>
-                    <th>ID</th>
-                    <th>Quantidade</th>
+                    <th>ID</th>                    
                     <th>Pedido ID</th>
                     <th>Cardapio ID</th>
+                    <th>Quantidade</th>
                 </tr>
             </thead> 
             <tbody>
                 <tr th:each="pratos : ${listaPratos}">
-                    <td th:text="${pratos.id}"></td>
-                    <td th:text="${pratos.quantidade}"></td>
+                    <td th:text="${pratos.id}"></td>                    
                     <td th:text="${pratos.idPedidos}"></td>                
                     <td th:text="${pratos.cardapioId}"></td>
+                    <td th:text="${pratos.quantidade}"></td>
                 </tr>
             </tbody>
         </table>
