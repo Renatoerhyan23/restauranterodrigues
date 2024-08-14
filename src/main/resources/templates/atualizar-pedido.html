@@ -53,11 +53,8 @@
             return false;
         }
         
-        // Calcula o valor total
-        var valorTotal = preco * quantidade;
-        
         // Construa a URL e redirecione
-        var url = '/atualizar-pedidos?id=' + id + '&idCardapio=' + idCardapio + '&preco=' + valorTotal + '&quantidade=' + quantidade;
+        var url = '/atualizar-pedidos?id=' + id + '&idCardapio=' + idCardapio + '&preco=' + preco + '&quantidade=' + quantidade;
         window.location.href = url;
     }
 </script>
